@@ -3,329 +3,510 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chalana Photography - Premium POS</title>
-    
+    <title>Chalana Photography - Pro System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { 
-            --primary: #e11d48; /* Premium Red */
-            --primary-hover: #be123c;
-            --dark-bg: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #1e293b;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f1f5f9; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
+
+        /* Header */
+        .app-header { background-color: #0b132b; color: white; padding: 18px; text-align: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; letter-spacing: 1px; transition: 0.3s; }
+        .app-header span { color: #e62e4d; }
+
+        /* Content Area */
+        .app-content { flex: 1; overflow-y: auto; padding-bottom: 85px; }
+        .tab-content { display: none; padding: 15px; }
+        .tab-content.active { display: block; }
+
+        /* Form Styles */
+        .form-section-title { font-size: 14px; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px; margin: 20px 0 10px 0; font-weight: bold; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; font-size: 13px; color: #475569; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background-color: white; color: #0b132b; }
+        textarea { resize: vertical; height: 65px; }
         
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
-            min-height: 100vh; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            color: #f8fafc; 
-            padding-bottom: 80px; 
-        }
+        .dynamic-box { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; }
+        .dynamic-box input { margin-bottom: 10px; }
+        .remove-btn { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 11px; cursor: pointer; }
 
-        .header-area { text-align: center; padding: 40px 0 20px 0; }
-        .studio-name { font-size: 34px; font-weight: 900; color: white; letter-spacing: -1px; margin: 0; }
-        .studio-name span { color: var(--primary); }
-        .studio-sub { font-size: 11px; color: #94a3b8; letter-spacing: 4px; font-weight: bold; margin-top: 5px; }
+        .btn-add { background: #10b981; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-print { width: 100%; background-color: #0b132b; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(11, 19, 43, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; cursor: pointer; }
+        .btn-print.invoice-btn { background-color: #e62e4d; box-shadow: 0 4px 10px rgba(230, 46, 77, 0.3); }
 
-        .content { flex: 1; padding: 15px; width: 100%; box-sizing: border-box; max-width: 800px; margin: auto; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* History Tab Styles */
+        .history-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid #3b82f6; box-shadow: 0 3px 10px rgba(0,0,0,0.05); }
+        .hist-top { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px; margin-bottom: 8px; }
+        .hist-no { font-weight: bold; color: #0b132b; font-size: 14px; }
+        .hist-date { font-size: 12px; color: #64748b; }
+        .hist-title { font-size: 15px; font-weight: bold; margin-bottom: 5px; color: #1e293b; }
+        .hist-total { color: #e62e4d; font-weight: 800; font-size: 16px; margin-bottom: 12px; }
+        .hist-actions { display: flex; gap: 10px; }
+        .btn-hist-approve { flex: 2; background: #10b981; color: white; border: none; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .btn-hist-delete { flex: 1; background: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
 
-        .card { background: var(--card-bg); backdrop-filter: blur(10px); padding: 25px 20px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px; color: var(--text-main); }
-        h3 { color: var(--dark-bg); margin-top: 0; font-size: 18px; font-weight: 800; border-left: 5px solid var(--primary); padding-left: 10px; margin-bottom: 20px; text-transform: uppercase; }
+        /* Placeholder for empty Invoice Tab */
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-state i { font-size: 40px; color: #cbd5e1; margin-bottom: 15px; }
+
+        /* Bottom Navigation (4 Tabs) */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; box-shadow: 0 -2px 15px rgba(0,0,0,0.1); z-index: 20; height: 70px; }
+        .nav-btn { flex: 1; padding: 8px 0; border: none; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 10px; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.2s; border-top: 3px solid transparent; }
+        .nav-btn i { font-size: 20px; }
+        .nav-btn.active { color: #e62e4d; background-color: #fff1f2; border-top-color: #e62e4d; }
+        .nav-btn.active i { transform: translateY(-2px); color: #e62e4d; }
+
+        /* --- DOCUMENT PREVIEW DESIGN --- */
+        .preview-wrapper { width: 100%; overflow-x: auto; background: #94a3b8; padding: 15px; border-radius: 12px; }
+        .document-box { background: white; width: 210mm; min-height: 297mm; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; transform-origin: top left; transform: scale(0.42); margin-bottom: -160%; padding-bottom: 120px; }
         
-        input, select { padding: 16px; border: 2px solid #e2e8f0; border-radius: 14px; outline: none; font-size: 15px; background: #f8fafc; width: 100%; box-sizing: border-box; margin-bottom: 12px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.1); }
+        .inv-header { background-color: #0b132b; padding: 45px 55px 35px 55px; color: white; }
+        .inv-brand { font-size: 40px; font-weight: 900; margin: 0; letter-spacing: 2px; }
+        .inv-brand .white-text { color: #ffffff; }
+        .inv-brand .red-text { color: #e62e4d; }
+        .inv-sub { font-size: 13px; color: #94a3b8; letter-spacing: 4px; margin-top: 6px; text-transform: uppercase; font-weight: 500; }
+        .inv-contact { font-size: 15px; color: #cbd5e1; margin-top: 18px; }
+        .header-divider { height: 8px; background-color: #e62e4d; width: 100%; }
+
+        .top-details { display: flex; justify-content: space-between; padding: 45px 55px 25px 55px; }
         
-        .main-btn { background: var(--primary); color: white; padding: 16px; border: none; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; width: 100%; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3); text-transform: uppercase; letter-spacing: 1px; }
-        .main-btn:active { transform: scale(0.96); background: var(--primary-hover); }
-
-        .cat-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
-        .cat-row::-webkit-scrollbar { display: none; }
-        .cat-badge { background: white; color: var(--dark-bg); padding: 10px 20px; border-radius: 50px; font-size: 13px; font-weight: bold; border: 2px solid #e2e8f0; white-space: nowrap; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .cat-badge.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; max-height: 45vh; overflow-y: auto; padding: 5px; }
-        .item-tag { background: white; border: 1px solid #f1f5f9; padding: 20px 10px; border-radius: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
-        .item-tag:active { transform: scale(0.95); border-color: var(--primary); }
-        .item-tag b { display: block; font-size: 14px; margin-bottom: 8px; color: var(--dark-bg); }
-        .item-tag small { color: var(--primary); font-weight: 800; font-size: 14px; background: #fff1f2; padding: 4px 10px; border-radius: 8px; }
-
-        .total-panel { background: var(--dark-bg); color: var(--primary); padding: 20px; border-radius: 20px; margin-top: 20px; text-align: right; border: 1px solid var(--primary); }
+        .bill-to-title { font-size: 15px; font-weight: 800; color: #1e293b; letter-spacing: 1px; }
+        .bill-to-title::before { content: ""; display: inline-block; width: 6px; height: 18px; background-color: #e62e4d; margin-right: 10px; vertical-align: middle; }
+        .customer-name { font-size: 22px; font-weight: bold; color: #0f172a; margin-top: 10px; }
+        .customer-phone { font-size: 15px; color: #64748b; margin-top: 5px; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; z-index: 100; border-top: 2px solid var(--primary); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; color: #64748b; background: none; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item span { font-size: 11px; margin-top: 5px; text-transform: uppercase; }
-
-        /* --- 100% OFFLINE PRINT STYLES --- */
-        #invoice-print-section { display: none; }
+        /* Fixed spacing for Quotation word */
+        .invoice-meta { text-align: right; width: 100%; }
+        .doc-word-quote { font-size: 45px; font-weight: 900; color: #e62e4d; letter-spacing: 0px; line-height: 1; margin-bottom: 12px; }
+        .doc-word-inv { font-size: 45px; font-weight: 900; color: #e62e4d; letter-spacing: 3px; line-height: 1; margin-bottom: 12px; }
         
-        @media print {
-            body { background: white !important; margin: 0 !important; padding: 0 !important; }
-            .no-print { display: none !important; }
-            #invoice-print-section { display: block !important; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
+        .doc-no, .doc-date { font-size: 15px; color: #475569; margin-top: 5px; }
+        .doc-no strong, .doc-date strong { color: #0b132b; }
+
+        .invoice-content { padding: 0 55px 45px 55px; }
+        .event-title { text-align: center; font-size: 24px; font-weight: 700; color: #0b132b; margin: 20px auto 35px auto; line-height: 1.6; text-decoration: underline; text-underline-offset: 6px; white-space: pre-line; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 35px; }
+        th, td { padding: 18px 12px; text-align: left; border-bottom: 1px solid #cbd5e1; }
+        th { background-color: #f1f5f9; color: #0b132b; font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+        td { font-size: 16px; }
+        td.amount, th.amount { text-align: right; font-weight: 800; }
+        .service-title { font-size: 17px; font-weight: bold; color: #0f172a; }
+        .service-desc { font-size: 13px; color: #64748b; margin-top: 5px; }
+        
+        .total-section { text-align: right; margin-top: 15px; font-size: 22px; font-weight: 900; color: #e62e4d; border-top: 3px solid #0b132b; padding-top: 15px; display: inline-block; float: right; letter-spacing: 1px; }
+        .clearfix::after { content: ""; clear: both; display: table; }
+
+        .promo-box { background-color: #ffffff; padding: 22px; text-align: center; color: #1e293b; font-weight: 600; font-size: 16px; border-radius: 8px; margin-top: 45px; margin-bottom: 30px; clear: both; line-height: 1.6; box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04); border-top: 4px solid #e62e4d; }
+        
+        .equipment-list { color: #334155; font-size: 14px; line-height: 1.8; margin-top: 25px; border-top: 1px dashed #cbd5e1; padding-top: 20px; }
+        .equipment-list ul { padding-left: 20px; margin: 0; }
+        .equipment-list li strong { color: #0b132b; }
+
+        /* FOOTERS */
+        .doc-footer { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #f8fafc; padding: 25px 55px; text-align: center; border-top: 1px solid #e2e8f0; height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .social-brand { font-size: 18px; font-weight: 800; color: #0b132b; margin-bottom: 10px; letter-spacing: 1px; }
+        .social-icons { font-size: 24px; color: #e62e4d; display: flex; gap: 20px; justify-content: center; }
+        
+        .ty-text { font-size: 15px; font-weight: 700; color: #0b132b; font-style: italic; margin-bottom: 6px; }
+        .sub-text { font-size: 13px; color: #64748b; }
+        
+        .pdf-mode { transform: scale(1) !important; margin-bottom: 0 !important; }
     </style>
 </head>
 <body>
 
-<div class="no-print">
-    <div class="header-area">
-        <h1 class="studio-name">CHALANA <span>PHOTOGRAPHY</span></h1>
-        <div class="studio-sub">PREMIUM VISION STUDIO</div>
-    </div>
+    <div class="app-header">CHALANA <span>PHOTOGRAPHY POS</span></div>
 
-    <div class="content">
-        <div id="billing" class="tab-content active">
-            <div class="card">
-                <h3>Select Services</h3>
-                <div id="catList" class="cat-row"></div>
-                <div id="tagGrid" class="item-grid"></div>
+    <div class="app-content">
+        
+        <div id="tab-quote-form" class="tab-content active">
+            <div class="form-section-title">Quotation Meta <span>(Auto-ID)</span></div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;"><label>Quote No</label><input type="text" id="qNo" readonly style="background: #f1f5f9; font-weight:bold;"></div>
+                <div class="form-group" style="flex: 1;"><label>Date</label><input type="text" id="qDate" readonly style="background: #f1f5f9;"></div>
             </div>
 
-            <div class="card">
-                <h3>Billing Details</h3>
-                <input type="text" id="custName" placeholder="Customer Name">
-                <input type="tel" id="custPhone" placeholder="Phone Number">
-                
-                <div style="overflow-x: auto;">
-                    <table style="width:100%; border-collapse: collapse; margin-top: 10px;">
-                        <thead style="border-bottom: 2px solid #f1f5f9; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase;">
-                            <tr><th style="padding: 10px;">Description</th><th style="padding: 10px; text-align: center;">Qty</th><th style="padding: 10px; text-align: right;">Amount</th><th style="padding: 10px;"></th></tr>
-                        </thead>
-                        <tbody id="billBody" style="font-size: 14px;"></tbody>
-                    </table>
+            <div class="form-section-title">Event & Packages</div>
+            <div class="form-group"><label>Event Title</label><textarea id="qTitle" placeholder="e.g. Wedding Ceremony"></textarea></div>
+            
+            <div id="q-services-container"></div>
+            <button class="btn-add" onclick="addQServiceRow()"><i class="fa-solid fa-plus-circle"></i> Add Service</button>
+
+            <div class="form-section-title">Extras & Equipment</div>
+            <div id="q-extras-container">
+                <div class="dynamic-box q-extra-item">
+                    <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+                    <label>Title</label><input type="text" class="ex-title" value="Camera Bodies">
+                    <label>Details</label><input type="text" class="ex-desc" value="Sony A7 IV, Canon 5D">
                 </div>
-                
-                <div class="total-panel">
-                    <small style="color: white; opacity: 0.7; text-transform: uppercase;">Grand Total:</small>
-                    <h2 id="grandTotal" style="margin: 5px 0 0; font-size: 28px;">Rs. 0.00</h2>
+            </div>
+            <button class="btn-add" style="background:#3b82f6;" onclick="addQExtraRow()"><i class="fa-solid fa-gear"></i> Add Extra</button>
+
+            <div class="form-section-title">Promotional Message (Only for Quotation)</div>
+            <div class="form-group"><textarea id="qPromo">Before the celebration, we would like to offer a FREE photo and video shoot with drone coverage...</textarea></div>
+        </div>
+
+        <div id="tab-quote-preview" class="tab-content">
+            <button class="btn-print" onclick="downloadQuotePDF()">
+                <i class="fa-solid fa-cloud-arrow-down"></i> SAVE TO HISTORY & DOWNLOAD
+            </button>
+            <div class="preview-wrapper">
+                <div class="document-box" id="quote-document">
+                    <div class="inv-header">
+                        <div class="inv-brand"><span class="white-text">CHALANA</span> <span class="red-text">PHOTOGRAPHY</span></div>
+                        <div class="inv-sub">Premium Vision Studio</div>
+                        <div class="inv-contact">Contact: +94 77 400 3350</div>
+                    </div>
+                    <div class="header-divider"></div>
+
+                    <div class="top-details">
+                        <div class="invoice-meta" style="text-align: left;">
+                            <div class="doc-word-quote">QUOTATION</div>
+                            <div class="doc-no">Quote No: <strong id="pqNo">-</strong></div>
+                            <div class="doc-date">Date: <strong id="pqDate">-</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="invoice-content">
+                        <div class="event-title" id="pqTitle">-</div>
+                        <table><thead><tr><th>Description</th><th class="amount">Amount (LKR)</th></tr></thead><tbody id="pqTable"></tbody></table>
+                        <div class="clearfix"><div class="total-section">TOTAL: <span id="pqTotal">0.00</span></div></div>
+                        <div class="promo-box" id="pqPromo"></div>
+                        <div class="equipment-list"><ul id="pqExtra"></ul></div>
+                    </div>
+
+                    <div class="doc-footer">
+                        <div class="social-brand">CHALANA PHOTOGRAPHY</div>
+                        <div class="social-icons">
+                            <i class="fa-brands fa-facebook"></i><i class="fa-brands fa-instagram"></i><i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                    </div>
                 </div>
-                <button class="main-btn" style="margin-top: 20px;" onclick="generateInvoicePDF()">Download / Print Invoice</button>
             </div>
         </div>
 
-        <div id="inventory" class="tab-content">
-            <div class="card">
-                <h3>Add New Service</h3>
-                <input type="text" id="itemName" placeholder="Service Name (e.g. Wedding Package)">
-                <input type="text" id="itemCat" placeholder="Category (e.g. Packages, Prints)">
-                <input type="number" id="itemPrice" placeholder="Price (Rs.)">
-                <button class="main-btn" onclick="saveItem()">Add To List</button>
-            </div>
-            <div class="card">
-                <h3>Current Services</h3>
-                <div id="inventoryContainer"></div>
-            </div>
+        <div id="tab-history" class="tab-content">
+            <div class="form-section-title">Saved Quotations</div>
+            <div id="history-container"></div>
         </div>
+
+        <div id="tab-invoice" class="tab-content">
+            
+            <div id="invoice-placeholder" class="empty-state">
+                <i class="fa-solid fa-file-invoice"></i>
+                <h3>No Quotation Selected</h3>
+                <p>Please go to the History tab and click "Create Invoice" on an approved quotation.</p>
+            </div>
+
+            <div id="invoice-builder" style="display: none;">
+                <div class="form-section-title" style="color: #e62e4d;">Step 1: Enter Customer Details</div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 1;"><label>Invoice No</label><input type="text" id="iNo" readonly style="background: #f1f5f9; font-weight:bold;"></div>
+                    <div class="form-group" style="flex: 1;"><label>Date</label><input type="text" id="iDate" readonly style="background: #f1f5f9;"></div>
+                </div>
+                <div class="form-group"><label>Customer Name</label><input type="text" id="iCusName" placeholder="Valued Customer" oninput="updateInvoicePreview()"></div>
+                <div class="form-group"><label>Customer Phone</label><input type="tel" id="iCusPhone" placeholder="07X XXX XXXX" oninput="updateInvoicePreview()"></div>
+                
+                <div class="form-section-title" style="color: #e62e4d; margin-top: 30px;">Step 2: Generate Invoice</div>
+                <button class="btn-print invoice-btn" onclick="downloadInvoicePDF()">
+                    <i class="fa-solid fa-file-pdf"></i> DOWNLOAD INVOICE PDF
+                </button>
+
+                <div class="preview-wrapper">
+                    <div class="document-box" id="invoice-document">
+                        <div class="inv-header">
+                            <div class="inv-brand"><span class="white-text">CHALANA</span> <span class="red-text">PHOTOGRAPHY</span></div>
+                            <div class="inv-sub">Premium Vision Studio</div>
+                            <div class="inv-contact">Contact: +94 77 400 3350</div>
+                        </div>
+                        <div class="header-divider"></div>
+
+                        <div class="top-details">
+                            <div style="text-align: left;">
+                                <div class="bill-to-title">BILL TO:</div>
+                                <div class="customer-name" id="piCusName">-</div>
+                                <div class="customer-phone">Phone: <span id="piCusPhone">-</span></div>
+                            </div>
+                            <div class="invoice-meta" style="text-align: right;">
+                                <div class="doc-word-inv">INVOICE</div>
+                                <div class="doc-no">Invoice No: <strong id="piNo">-</strong></div>
+                                <div class="doc-date">Date: <strong id="piDate">-</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="invoice-content">
+                            <div class="event-title" id="piTitle">-</div>
+                            <table><thead><tr><th>Description</th><th class="amount">Amount (LKR)</th></tr></thead><tbody id="piTable"></tbody></table>
+                            <div class="clearfix"><div class="total-section">TOTAL: <span id="piTotal">0.00</span></div></div>
+                            <div class="equipment-list"><ul id="piExtra"></ul></div>
+                        </div>
+
+                        <div class="doc-footer">
+                            <div class="ty-text">Thank you for choosing Chalana Photography to capture your special moments.</div>
+                            <div class="sub-text">Payment can be made via Bank Transfer or Cash. Please retain this invoice for your records.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showTab('billing')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"></path></svg>
-            <span>Billing</span>
+    <div class="bottom-nav">
+        <button class="nav-btn active" id="btn-tab-quote-form" onclick="switchTab('quote-form')">
+            <i class="fa-solid fa-pen-to-square"></i><span>EDIT QUOTE</span>
         </button>
-        <button class="nav-item" onclick="showTab('inventory')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"></path></svg>
-            <span>Items</span>
+        <button class="nav-btn" id="btn-tab-quote-preview" onclick="switchTab('quote-preview')">
+            <i class="fa-solid fa-file-contract"></i><span>VIEW QUOTE</span>
         </button>
-    </nav>
-</div>
+        <button class="nav-btn" id="btn-tab-history" onclick="switchTab('history')">
+            <i class="fa-solid fa-clock-rotate-left"></i><span>HISTORY</span>
+        </button>
+        <button class="nav-btn" id="btn-tab-invoice" onclick="switchTab('invoice')">
+            <i class="fa-solid fa-file-invoice-dollar"></i><span>INVOICE</span>
+        </button>
+    </div>
 
-<div id="invoice-print-section"></div>
+    <script>
+        let currentQuoteForInvoice = null;
 
-<script>
-    let inventory = JSON.parse(localStorage.getItem('chalana_en_data')) || [];
-    let currentBill = [];
-    let activeCategory = null;
-
-    function showTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if(id === 'billing') { renderCategories(); renderGrid(); }
-        if(id === 'inventory') renderInventory();
-    }
-
-    function saveItem() {
-        const name = document.getElementById('itemName').value.trim();
-        const cat = document.getElementById('itemCat').value.trim() || "General";
-        const price = parseFloat(document.getElementById('itemPrice').value);
-        if(name && price) {
-            inventory.push({ name, cat, price });
-            localStorage.setItem('chalana_en_data', JSON.stringify(inventory));
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemPrice').value = '';
-            renderInventory();
-            alert("Service added successfully!");
-        }
-    }
-
-    function renderInventory() {
-        const container = document.getElementById('inventoryContainer');
-        container.innerHTML = inventory.map((item, idx) => `
-            <div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #f1f5f9; align-items:center;">
-                <div><b>${item.name}</b><br><small style="color:var(--primary);">${item.cat} | Rs. ${item.price.toFixed(2)}</small></div>
-                <button onclick="deleteItem(${idx})" style="color:var(--primary); border:none; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase;">Delete</button>
-            </div>
-        `).join('');
-    }
-
-    function deleteItem(idx) {
-        if(confirm("Are you sure you want to delete this?")) {
-            inventory.splice(idx, 1);
-            localStorage.setItem('chalana_en_data', JSON.stringify(inventory));
-            renderInventory();
-        }
-    }
-
-    function renderCategories() {
-        const cats = [...new Set(inventory.map(i => i.cat))];
-        
-        // Remove ALL logic. Auto-select the first category if current is not valid.
-        if (cats.length > 0 && !cats.includes(activeCategory)) {
-            activeCategory = cats[0];
-        } else if (cats.length === 0) {
-            activeCategory = null;
+        function initApp() {
+            resetQuoteForm();
+            if(document.getElementById('q-services-container').innerHTML.trim() === '') {
+                addQServiceRow('Photography Package', 'Full day coverage with soft copies', '25000');
+            }
+            loadHistory();
         }
 
-        document.getElementById('catList').innerHTML = cats.map(c => `
-            <div class="cat-badge ${activeCategory === c ? 'active' : ''}" onclick="activeCategory='${c}'; renderCategories(); renderGrid();">${c}</div>
-        `).join('');
-    }
-
-    function renderGrid() {
-        const grid = document.getElementById('tagGrid');
-        const filtered = inventory.filter(i => i.cat === activeCategory);
-        
-        if (filtered.length === 0) {
-            grid.innerHTML = `<p style="color:#94a3b8; font-size: 14px;">No services added yet. Please add from Items menu.</p>`;
-            return;
+        function getTodayDate() {
+            return new Date().toLocaleDateString('en-GB');
         }
 
-        grid.innerHTML = filtered.map(item => `
-            <div class="item-tag" onclick="addToBill('${item.name.replace(/'/g, "\\'")}', ${item.price})">
-                <b>${item.name}</b>
-                <small>Rs. ${item.price.toFixed(2)}</small>
-            </div>
-        `).join('');
-    }
-
-    function addToBill(name, price) {
-        const existing = currentBill.find(i => i.name === name);
-        if(existing) {
-            existing.qty++;
-            existing.total = existing.qty * existing.price;
-        } else {
-            currentBill.push({ name, price, qty: 1, total: price });
+        function resetQuoteForm() {
+            document.getElementById('qDate').value = getTodayDate();
+            document.getElementById('qNo').value = `#QT-${Math.floor(1000 + Math.random() * 9000)}`;
         }
-        renderBill();
-    }
 
-    function renderBill() {
-        let gt = 0;
-        document.getElementById('billBody').innerHTML = currentBill.map((item, idx) => {
-            gt += item.total;
-            return `
-                <tr>
-                    <td style="padding:12px;"><b>${item.name}</b></td>
-                    <td style="text-align:center;">${item.qty}</td>
-                    <td style="text-align:right; font-weight:bold;">${item.total.toFixed(2)}</td>
-                    <td style="text-align:center; color:var(--primary); cursor:pointer; font-weight:bold;" onclick="currentBill.splice(${idx},1); renderBill();">X</td>
-                </tr>`;
-        }).join('');
-        document.getElementById('grandTotal').innerText = `Rs. ${gt.toFixed(2)}`;
-    }
+        function formatMoney(amount) {
+            return parseFloat(amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
 
-    // 100% OFFLINE PDF GENERATOR
-    function generateInvoicePDF() {
-        if(currentBill.length === 0) return alert("Please add at least one service to the bill.");
-        
-        const customer = document.getElementById('custName').value || "Valued Customer";
-        const phone = document.getElementById('custPhone').value || "-";
-        const date = new Date().toLocaleDateString('en-GB');
-        const invNo = "CP-" + Date.now().toString().slice(-6);
-        const total = currentBill.reduce((a, b) => a + b.total, 0);
+        // --- QUOTE BUILDER LOGIC ---
+        function addQServiceRow(name = '', desc = '', price = '') {
+            const container = document.getElementById('q-services-container');
+            const row = document.createElement('div');
+            row.className = 'dynamic-box q-service-item';
+            row.innerHTML = `
+                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+                <input type="text" class="svc-name" placeholder="Service Name" value="${name}">
+                <input type="text" class="svc-desc" placeholder="Details" value="${desc}">
+                <input type="number" class="svc-price" placeholder="Price (LKR)" value="${price}">
+            `;
+            container.appendChild(row);
+        }
 
-        let tableRows = currentBill.map(i => `
-            <tr>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; color: #1e293b;">${i.name}</td>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; color: #1e293b; text-align: center;">${i.qty}</td>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; color: #1e293b; text-align: right;">${i.price.toFixed(2)}</td>
-                <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; color: #1e293b; text-align: right; font-weight: bold;">${i.total.toFixed(2)}</td>
-            </tr>
-        `).join('');
+        function addQExtraRow() {
+            const container = document.getElementById('q-extras-container');
+            const row = document.createElement('div');
+            row.className = 'dynamic-box q-extra-item';
+            row.innerHTML = `
+                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+                <label>Title</label><input type="text" class="ex-title" placeholder="e.g. Lenses">
+                <label>Details</label><input type="text" class="ex-desc" placeholder="e.g. 85mm, 35mm">
+            `;
+            container.appendChild(row);
+        }
 
-        const invoiceHTML = `
-            <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 0 auto; background: white;">
+        function collectQuoteData() {
+            let services = [];
+            let total = 0;
+            document.querySelectorAll('.q-service-item').forEach(item => {
+                const name = item.querySelector('.svc-name').value;
+                const desc = item.querySelector('.svc-desc').value;
+                const price = parseFloat(item.querySelector('.svc-price').value || 0);
+                if(name) {
+                    services.push({ name, desc, price });
+                    total += price;
+                }
+            });
+
+            let extras = [];
+            document.querySelectorAll('.q-extra-item').forEach(item => {
+                const title = item.querySelector('.ex-title').value;
+                const desc = item.querySelector('.ex-desc').value;
+                if(title || desc) extras.push({ title, desc });
+            });
+
+            return {
+                id: Date.now().toString(),
+                qNo: document.getElementById('qNo').value,
+                date: document.getElementById('qDate').value,
+                title: document.getElementById('qTitle').value || 'Service Coverage',
+                promo: document.getElementById('qPromo').value,
+                services: services,
+                extras: extras,
+                total: total
+            };
+        }
+
+        function updateQuotePreview() {
+            const data = collectQuoteData();
+            
+            document.getElementById('pqNo').innerText = data.qNo;
+            document.getElementById('pqDate').innerText = data.date;
+            document.getElementById('pqTitle').innerText = data.title;
+            
+            const promoBox = document.getElementById('pqPromo');
+            if (data.promo.trim() === '') promoBox.style.display = 'none';
+            else { promoBox.style.display = 'block'; promoBox.innerText = data.promo; }
+
+            const tbody = document.getElementById('pqTable');
+            tbody.innerHTML = '';
+            data.services.forEach(s => {
+                tbody.innerHTML += `<tr><td><div class="service-title">${s.name}</div><div class="service-desc">${s.desc}</div></td><td class="amount">${formatMoney(s.price)}</td></tr>`;
+            });
+            document.getElementById('pqTotal').innerText = formatMoney(data.total);
+
+            const extraList = document.getElementById('pqExtra');
+            extraList.innerHTML = '';
+            data.extras.forEach(e => { extraList.innerHTML += `<li><strong>${e.title}:</strong> ${e.desc}</li>`; });
+            extraList.innerHTML += `<li>All edited photos will be optimized for social media platforms.</li>`;
+        }
+
+        function downloadQuotePDF() {
+            updateQuotePreview();
+            const data = collectQuoteData();
+            
+            let history = JSON.parse(localStorage.getItem('chalana_quotes')) || [];
+            history.unshift(data);
+            localStorage.setItem('chalana_quotes', JSON.stringify(history));
+            loadHistory();
+
+            const el = document.getElementById('quote-document');
+            el.classList.add('pdf-mode');
+            html2pdf().set({
+                margin: 0, filename: `Chalana_Quotation_${data.qNo.replace('#','')}.pdf`, image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(el).save().then(() => {
+                el.classList.remove('pdf-mode');
+                resetQuoteForm();
+                alert("Quotation Saved to History and Downloaded!");
+            });
+        }
+
+        // --- HISTORY LOGIC ---
+        function loadHistory() {
+            const historyContainer = document.getElementById('history-container');
+            let history = JSON.parse(localStorage.getItem('chalana_quotes')) || [];
+            historyContainer.innerHTML = '';
+            
+            if(history.length === 0) {
+                historyContainer.innerHTML = `<p style="text-align:center; color:#64748b; margin-top:20px;">No quotations saved yet.</p>`;
+                return;
+            }
+
+            history.forEach(item => {
+                historyContainer.innerHTML += `
+                    <div class="history-card">
+                        <div class="hist-top"><span class="hist-no">${item.qNo}</span><span class="hist-date">${item.date}</span></div>
+                        <div class="hist-title">${item.title.substring(0, 30)}...</div>
+                        <div class="hist-total">LKR ${formatMoney(item.total)}</div>
+                        <div class="hist-actions">
+                            <button class="btn-hist-approve" onclick="approveToInvoice('${item.id}')"><i class="fa-solid fa-check"></i> Create Invoice</button>
+                            <button class="btn-hist-delete" onclick="deleteQuote('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function deleteQuote(id) {
+            if(confirm("Delete this quotation?")) {
+                let history = JSON.parse(localStorage.getItem('chalana_quotes')) || [];
+                history = history.filter(item => item.id !== id);
+                localStorage.setItem('chalana_quotes', JSON.stringify(history));
+                loadHistory();
+            }
+        }
+
+        // --- INVOICE LOGIC ---
+        function approveToInvoice(id) {
+            let history = JSON.parse(localStorage.getItem('chalana_quotes')) || [];
+            currentQuoteForInvoice = history.find(item => item.id === id);
+            
+            if(currentQuoteForInvoice) {
+                document.getElementById('iDate').value = getTodayDate();
+                document.getElementById('iNo').value = `#INV-${Math.floor(1000 + Math.random() * 9000)}`;
+                document.getElementById('iCusName').value = '';
+                document.getElementById('iCusPhone').value = '';
                 
-                <div style="background-color: #0f172a; padding: 40px; border-bottom: 5px solid #e11d48;">
-                    <h1 style="margin: 0; font-size: 38px; color: white; font-weight: 900; letter-spacing: -1px;">CHALANA <span style="color: #e11d48;">PHOTOGRAPHY</span></h1>
-                    <p style="margin: 8px 0 0; font-size: 11px; letter-spacing: 3px; color: #94a3b8; font-weight: bold;">PREMIUM VISION STUDIO</p>
-                    <p style="margin: 10px 0 0; font-size: 14px; color: white;">Contact: +94 77 400 3350</p>
-                </div>
+                document.getElementById('invoice-placeholder').style.display = 'none';
+                document.getElementById('invoice-builder').style.display = 'block';
+                
+                switchTab('invoice');
+                updateInvoicePreview();
+            }
+        }
 
-                <div style="padding: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
-                    <div>
-                        <h3 style="margin: 0 0 10px; color: #0f172a; font-size: 14px; text-transform: uppercase;">Bill To:</h3>
-                        <p style="margin: 0 0 5px; font-weight: bold; font-size: 20px; color: #1e293b;">${customer}</p>
-                        <p style="margin: 0; color: #64748b; font-size: 14px;">Phone: ${phone}</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <h2 style="margin: 0 0 10px; font-size: 42px; color: #e11d48; font-weight: 900; letter-spacing: 2px;">INVOICE</h2>
-                        <p style="margin: 0 0 5px; color: #64748b; font-size: 14px;">Invoice No: <b style="color: #1e293b;">#${invNo}</b></p>
-                        <p style="margin: 0; color: #64748b; font-size: 14px;">Date: <b style="color: #1e293b;">${date}</b></p>
-                    </div>
-                </div>
+        function updateInvoicePreview() {
+            if(!currentQuoteForInvoice) return;
+            const data = currentQuoteForInvoice;
+            
+            document.getElementById('piNo').innerText = document.getElementById('iNo').value;
+            document.getElementById('piDate').innerText = document.getElementById('iDate').value;
+            document.getElementById('piCusName').innerText = document.getElementById('iCusName').value || 'Customer Name';
+            document.getElementById('piCusPhone').innerText = document.getElementById('iCusPhone').value || '-';
+            document.getElementById('piTitle').innerText = data.title;
+            
+            // Note: The Promo box element does not exist in the invoice preview HTML anymore.
 
-                <div style="padding: 0 40px;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #0f172a;">
-                                <th style="padding: 15px; text-align: left; color: white; font-size: 12px; letter-spacing: 1px;">DESCRIPTION</th>
-                                <th style="padding: 15px; text-align: center; color: white; font-size: 12px; letter-spacing: 1px;">QTY</th>
-                                <th style="padding: 15px; text-align: right; color: white; font-size: 12px; letter-spacing: 1px;">UNIT PRICE</th>
-                                <th style="padding: 15px; text-align: right; color: white; font-size: 12px; letter-spacing: 1px;">TOTAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
-                </div>
+            const tbody = document.getElementById('piTable');
+            tbody.innerHTML = '';
+            data.services.forEach(s => {
+                tbody.innerHTML += `<tr><td><div class="service-title">${s.name}</div><div class="service-desc">${s.desc}</div></td><td class="amount">${formatMoney(s.price)}</td></tr>`;
+            });
+            document.getElementById('piTotal').innerText = formatMoney(data.total);
 
-                <div style="padding: 30px 40px; display: flex; justify-content: flex-end;">
-                    <div style="text-align: right; border-top: 2px solid #e11d48; padding-top: 15px; min-width: 250px;">
-                        <p style="margin: 0 0 5px; font-size: 14px; color: #64748b; text-transform: uppercase; font-weight: bold;">Grand Total</p>
-                        <h2 style="margin: 0; font-size: 32px; color: #e11d48;">Rs. ${total.toFixed(2)}</h2>
-                    </div>
-                </div>
+            const extraList = document.getElementById('piExtra');
+            extraList.innerHTML = '';
+            data.extras.forEach(e => { extraList.innerHTML += `<li><strong>${e.title}:</strong> ${e.desc}</li>`; });
+            extraList.innerHTML += `<li>All edited photos will be optimized for social media platforms.</li>`;
+        }
 
-                <div style="margin-top: 40px; padding: 40px; text-align: center; background-color: #f8fafc; border-top: 1px solid #e2e8f0;">
-                    <p style="font-style: italic; margin: 0 0 8px; color: #1e293b; font-size: 14px; font-weight: bold;">Thank you for choosing Chalana Photography to capture your special moments.</p>
-                    <p style="margin: 0; color: #64748b; font-size: 12px;">Payment can be made via Bank Transfer or Cash. Please retain this invoice for your records.</p>
-                </div>
-            </div>
-        `;
+        function downloadInvoicePDF() {
+            if(!document.getElementById('iCusName').value) {
+                alert("Please enter the Customer Name first.");
+                return;
+            }
+            updateInvoicePreview();
+            
+            const invNo = document.getElementById('iNo').value.replace('#', '');
+            const el = document.getElementById('invoice-document');
+            el.classList.add('pdf-mode');
+            
+            html2pdf().set({
+                margin: 0, filename: `Chalana_Invoice_${invNo}.pdf`, image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(el).save().then(() => {
+                el.classList.remove('pdf-mode');
+            });
+        }
 
-        // Inject into print section
-        document.getElementById('invoice-print-section').innerHTML = invoiceHTML;
-        
-        // Trigger browser's native print-to-pdf (Works completely offline)
-        window.print();
-    }
+        // --- TAB SWITCHER ---
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('btn-tab-' + tab).classList.add('active');
+            
+            if(tab === 'quote-preview') updateQuotePreview();
+            if(tab === 'history') loadHistory();
+            if(tab === 'invoice' && currentQuoteForInvoice) updateInvoicePreview();
+            
+            document.querySelector('.app-content').scrollTo(0, 0);
+        }
 
-    // Init
-    renderCategories();
-    renderGrid();
-</script>
-
+        window.onload = initApp;
+    </script>
 </body>
 </html>
